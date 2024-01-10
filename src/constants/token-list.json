@@ -1,0 +1,22 @@
+{
+  "testnet": [
+    {
+      "tokenSymbol": "SOL",
+      "mintAddress": "So11111111111111111111111111111111111111112",
+      "tokenName": "Solana",
+      "icon": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png"
+    },
+    {
+      "tokenSymbol": "A",
+      "mintAddress": "67aWcFSTKfa6TDgWeAzE35VoBCjoLeJVRvoxRF2QQsfV",
+      "tokenName": "A",
+      "icon": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bitcoin/info/logo.png"
+    },
+    {
+      "tokenSymbol": "B",
+      "mintAddress": "9r4sH83TiXKicwjmJb9B7jBFp4t5kvyQSDGryj8UsQVe",
+      "tokenName": "B",
+      "icon": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bitcoin/info/logo.png"
+    }
+  ]
+}
