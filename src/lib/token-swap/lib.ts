@@ -103,7 +103,7 @@ export const myKeyPair = Keypair.fromSecretKey(
  * 使用测试币 A,B,LP
  */
 
-tokenPool = new PublicKey('966QCJrzURx1jrPKmMrtV2He1Ng6dcbhY9gBz3Y3fJFX'); //new PublicKey(token_list[3].mintAddress); //TODO
+// tokenPool = new PublicKey('966QCJrzURx1jrPKmMrtV2He1Ng6dcbhY9gBz3Y3fJFX'); //new PublicKey(token_list[3].mintAddress); //TODO
 
 // tokenAccountPool = new PublicKey(token_list[3].tokenAccount); // TODO
 
@@ -309,15 +309,15 @@ export async function depositAllTokenTypes(
     mintA,
     owner.publicKey,
   );
-  // await mintTo(connection, payer, mintA, userAccountA, owner, tokenA);
-  // await approve(
-  //   connection,
-  //   payer,
-  //   userAccountA,
-  //   userTransferAuthority.publicKey,
-  //   owner,
-  //   tokenA,
-  // );
+  // await mintTo(connection, payer, mintA, userAccountA.address, owner, tokenA);
+  await approve(
+    connection,
+    payer,
+    userAccountA.address,
+    userTransferAuthority.publicKey,
+    owner,
+    tokenA,
+  );
   console.log('Creating depositor token b account');
   const userAccountB = await getOrCreateAssociatedTokenAccount(
     connection,
@@ -325,20 +325,20 @@ export async function depositAllTokenTypes(
     mintB,
     owner.publicKey,
   );
-  // await mintTo(connection, payer, mintB, userAccountB, owner, tokenB);
-  // await approve(
-  //   connection,
-  //   payer,
-  //   userAccountB,
-  //   userTransferAuthority.publicKey,
-  //   owner,
-  //   tokenB,
-  // );
+  // await mintTo(connection, payer, mintB, userAccountB.address, owner, tokenB);
+  await approve(
+    connection,
+    payer,
+    userAccountB.address,
+    userTransferAuthority.publicKey,
+    owner,
+    tokenB,
+  );
   console.log('Creating depositor pool token account');
   const newAccountPool = await getOrCreateAssociatedTokenAccount(
     connection,
     payer,
-    tokenPool,
+    tokenSwap.poolToken,
     owner.publicKey,
   );
 
