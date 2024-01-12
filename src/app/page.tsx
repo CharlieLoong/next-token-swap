@@ -136,7 +136,7 @@ export default function Home() {
   async function withdraw() {
     if (!tokenSwap) return;
     toast('withdrawing');
-    await withdrawAllTokenTypes(connection, tokenSwap);
+    await withdrawAllTokenTypes(connection, tokenSwap, walletCtx);
     toast.success('withdraw success');
   }
   console.log(walletCtx);

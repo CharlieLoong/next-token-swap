@@ -372,7 +372,8 @@ export async function depositAllTokenTypes(
     skipPreflight: true,
   };
   console.log('Signing transaction with wallet');
-  let blockhash = (await connection.getLatestBlockhash('finalized')).blockhash;
+  const blockhash = (await connection.getLatestBlockhash('finalized'))
+    .blockhash;
   transaction.recentBlockhash = blockhash;
   transaction.feePayer = user;
 
@@ -397,6 +398,7 @@ export async function depositAllTokenTypes(
 export async function withdrawAllTokenTypes(
   connection: Connection,
   tokenSwap: TokenSwap,
+  wallet: WalletContextState,
 ): Promise<void> {
   // console.log(tokenSwap);
   const poolMintInfo = await getMint(connection, tokenSwap.poolToken);
@@ -418,33 +420,50 @@ export async function withdrawAllTokenTypes(
     connection,
     payer,
     mintA,
-    owner.publicKey,
+    wallet.publicKey!,
   );
   console.log('Creating withdraw token B account');
   const userAccountB = await getOrCreateAssociatedTokenAccount(
     connection,
     payer,
     mintB,
-    owner.publicKey,
+    wallet.publicKey!,
   );
   const tokenAccountPool = (
     await getOrCreateAssociatedTokenAccount(
       connection,
       payer,
       tokenSwap.poolToken,
-      owner.publicKey,
+      wallet.publicKey!,
     )
   ).address;
   const userTransferAuthority = Keypair.generate();
   console.log('Approving withdrawal from pool account');
-  await approve(
-    connection,
-    payer,
-    tokenAccountPool,
-    userTransferAuthority.publicKey,
-    owner,
-    POOL_TOKEN_AMOUNT,
+
+  // await approve(
+  //   connection,
+  //   payer,
+  //   tokenAccountPool,
+  //   userTransferAuthority.publicKey,
+  //   owner,
+  //   POOL_TOKEN_AMOUNT,
+  // );
+  const transaction = new Transaction().add(
+    createApproveInstruction(
+      tokenAccountPool,
+      userTransferAuthority.publicKey,
+      wallet.publicKey!,
+      POOL_TOKEN_AMOUNT,
+      [],
+      TOKEN_PROGRAM_ID,
+    ),
   );
+  const blockhash = (await connection.getLatestBlockhash('finalized'))
+    .blockhash;
+  transaction.recentBlockhash = blockhash;
+  transaction.feePayer = wallet.publicKey!;
+  await wallet.signTransaction!(transaction);
+  await wallet.sendTransaction(transaction, connection);
 
   const confirmOptions = {
     skipPreflight: true,
