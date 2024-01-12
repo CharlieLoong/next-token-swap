@@ -120,6 +120,7 @@ mintB = new PublicKey('VfkeR5txoVnrHrrEKVmnfZ2jcJY5vWqEeqmV4cfJtQH');
 payer = owner = myKeyPair;
 
 import swapKeypair from '@/constants/spl_token_swap-keypair.json';
+import { WalletContextState } from '@solana/wallet-adapter-react';
 
 let connection: Connection;
 
@@ -293,6 +294,7 @@ export async function fetchTokenSwap(
 export async function depositAllTokenTypes(
   connection: Connection,
   tokenSwap: TokenSwap,
+  wallet: WalletContextState,
 ): Promise<void> {
   const poolMintInfo = await getMint(connection, tokenSwap.poolToken);
   const supply = poolMintInfo.supply;
@@ -302,49 +304,80 @@ export async function depositAllTokenTypes(
   const tokenB = (swapTokenB.amount * BigInt(POOL_TOKEN_AMOUNT)) / supply;
 
   const userTransferAuthority = Keypair.generate();
+  const transaction = new Transaction();
+  const user = wallet.publicKey!;
+
   console.log('Creating depositor token a account');
   const userAccountA = await getOrCreateAssociatedTokenAccount(
     connection,
     payer,
     mintA,
-    owner.publicKey,
+    user,
   );
   // await mintTo(connection, payer, mintA, userAccountA.address, owner, tokenA);
-  await approve(
-    connection,
-    payer,
-    userAccountA.address,
-    userTransferAuthority.publicKey,
-    owner,
-    tokenA,
+  // await approve(
+  //   connection,
+  //   payer,
+  //   userAccountA.address,
+  //   userTransferAuthority.publicKey,
+  //   user,
+  //   tokenA,
+  // );
+  transaction.add(
+    createApproveInstruction(
+      userAccountA.address,
+      userTransferAuthority.publicKey,
+      user,
+      tokenA,
+      [],
+      TOKEN_PROGRAM_ID,
+    ),
   );
   console.log('Creating depositor token b account');
   const userAccountB = await getOrCreateAssociatedTokenAccount(
     connection,
     payer,
     mintB,
-    owner.publicKey,
+    user,
   );
   // await mintTo(connection, payer, mintB, userAccountB.address, owner, tokenB);
-  await approve(
-    connection,
-    payer,
-    userAccountB.address,
-    userTransferAuthority.publicKey,
-    owner,
-    tokenB,
+  // await approve(
+  //   connection,
+  //   payer,
+  //   userAccountB.address,
+  //   userTransferAuthority.publicKey,
+  //   user,
+  //   tokenB,
+  // );
+  transaction.add(
+    createApproveInstruction(
+      userAccountB.address,
+      userTransferAuthority.publicKey,
+      user,
+      tokenB,
+      [],
+      TOKEN_PROGRAM_ID,
+    ),
   );
+
   console.log('Creating depositor pool token account');
   const newAccountPool = await getOrCreateAssociatedTokenAccount(
     connection,
     payer,
     tokenSwap.poolToken,
-    owner.publicKey,
+    user,
   );
 
   const confirmOptions = {
     skipPreflight: true,
   };
+  console.log('Signing transaction with wallet');
+  let blockhash = (await connection.getLatestBlockhash('finalized')).blockhash;
+  transaction.recentBlockhash = blockhash;
+  transaction.feePayer = user;
+
+  await wallet.signTransaction!(transaction);
+  await wallet.sendTransaction(transaction, connection);
 
   console.log('Depositing into swap');
   await tokenSwap.depositAllTokenTypes(
@@ -365,7 +398,7 @@ export async function withdrawAllTokenTypes(
   connection: Connection,
   tokenSwap: TokenSwap,
 ): Promise<void> {
-  console.log(tokenSwap);
+  // console.log(tokenSwap);
   const poolMintInfo = await getMint(connection, tokenSwap.poolToken);
   const supply = poolMintInfo.supply;
   let swapTokenA = await getAccount(connection, tokenSwap.tokenAccountA);

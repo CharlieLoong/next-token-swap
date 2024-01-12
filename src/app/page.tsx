@@ -127,19 +127,19 @@ export default function Home() {
     //     return;
     //   }
     // }
-    if (!tokenSwap) return;
+    if (!tokenSwap || !walletCtx.publicKey) return toast.error('!!!');
     toast('depositing');
-    await depositAllTokenTypes(connection, tokenSwap);
+    await depositAllTokenTypes(connection, tokenSwap, walletCtx);
     toast.success('deposit success');
   }
 
   async function withdraw() {
     if (!tokenSwap) return;
+    toast('withdrawing');
     await withdrawAllTokenTypes(connection, tokenSwap);
     toast.success('withdraw success');
-
   }
-
+  console.log(walletCtx);
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
       <ModeToggle />
