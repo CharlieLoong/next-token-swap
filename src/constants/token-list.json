@@ -4,18 +4,28 @@
       "tokenSymbol": "SOL",
       "mintAddress": "So11111111111111111111111111111111111111112",
       "tokenName": "Solana",
+      "tokenAccount": "undefined",
       "icon": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png"
     },
     {
       "tokenSymbol": "A",
-      "mintAddress": "67aWcFSTKfa6TDgWeAzE35VoBCjoLeJVRvoxRF2QQsfV",
+      "mintAddress": "WgJ4QZ2SqDomPToBn2cjqjnXETNiHxPdh35mBsCdqgk",
+      "tokenAccount": "5DFdUYBPdc7zfiNpXvc1xTxvVYkD231ZQJqqUx6WM2wB",
       "tokenName": "A",
       "icon": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bitcoin/info/logo.png"
     },
     {
       "tokenSymbol": "B",
-      "mintAddress": "9r4sH83TiXKicwjmJb9B7jBFp4t5kvyQSDGryj8UsQVe",
+      "mintAddress": "VfkeR5txoVnrHrrEKVmnfZ2jcJY5vWqEeqmV4cfJtQH",
+      "tokenAccount": "71GiejrvrwkDC9gfG1pTvQXo7yp5ziqqQhqrEKmfVxrD",
       "tokenName": "B",
+      "icon": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bitcoin/info/logo.png"
+    },
+    {
+      "tokenSymbol": "LP",
+      "mintAddress": "4fzwocekAUNFi8TJohLQi7HKZVoCsddxv1FsrGJ7RUU9",
+      "tokenAccount": "4PLzuDdUoMnJftTptiKe8TLDhU8jwV5er6F9yZJeRkpS",
+      "tokenName": "LP",
       "icon": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bitcoin/info/logo.png"
     }
   ]
