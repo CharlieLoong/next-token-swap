@@ -482,22 +482,125 @@ export async function withdrawAllTokenTypes(
     tokenB,
     confirmOptions,
   );
+}
 
-  //const poolMintInfo = await tokenPool.getMintInfo();
-  // swapTokenA = await getAccount(connection, tokenAccountA);
-  // swapTokenB = await getAccount(connection, tokenAccountB);
+enum SwapType {
+  A2B,
+  B2A,
+}
+export async function swap(
+  connection: Connection,
+  tokenSwap: TokenSwap,
+  wallet: WalletContextState,
+  swapType: SwapType = SwapType.A2B,
+): Promise<void> {
+  console.log('Creating swap token a account');
+  const user = wallet.publicKey!;
+  const transaction = new Transaction();
 
-  // let info = await getAccount(connection, tokenAccountPool);
-  // assert(info.amount == DEFAULT_POOL_TOKEN_AMOUNT - POOL_TOKEN_AMOUNT);
-  // assert(swapTokenA.amount == currentSwapTokenA - tokenA);
-  // currentSwapTokenA -= tokenA;
-  // assert(swapTokenB.amount == currentSwapTokenB - tokenB);
-  // currentSwapTokenB -= tokenB;
-  // info = await getAccount(connection, userAccountA);
-  // assert(info.amount == tokenA);
-  // info = await getAccount(connection, userAccountB);
-  // assert(info.amount == tokenB);
-  // info = await getAccount(connection, feeAccount);
-  // assert(info.amount == feeAmount);
-  // currentFeeAmount = feeAmount;
+  const userAccountA = await getOrCreateAssociatedTokenAccount(
+    connection,
+    payer,
+    mintA,
+    user,
+  );
+
+  const userTransferAuthority = Keypair.generate();
+  // await approve(
+  //   connection,
+  //   payer,
+  //   userAccountA.address,
+  //   userTransferAuthority.publicKey,
+  //   owner,
+  //   SWAP_AMOUNT_IN,
+  // );
+
+  console.log('Creating swap token b account');
+  const userAccountB = await getOrCreateAssociatedTokenAccount(
+    connection,
+    payer,
+    mintB,
+    user,
+  );
+
+  const poolAccount = SWAP_PROGRAM_OWNER_FEE_ADDRESS
+    ? (
+        await getOrCreateAssociatedTokenAccount(
+          connection,
+          payer,
+          tokenSwap.poolToken,
+          owner.publicKey,
+        )
+      ).address
+    : null;
+
+  const confirmOptions = {
+    skipPreflight: true,
+  };
+  console.log('Signing transaction');
+  if (swapType === SwapType.A2B) {
+    transaction.add(
+      createApproveInstruction(
+        userAccountA.address,
+        userTransferAuthority.publicKey,
+        user,
+        SWAP_AMOUNT_IN,
+        [],
+        TOKEN_PROGRAM_ID,
+      ),
+    );
+  } else {
+    transaction.add(
+      createApproveInstruction(
+        userAccountB.address,
+        userTransferAuthority.publicKey,
+        user,
+        SWAP_AMOUNT_IN,
+        [],
+        TOKEN_PROGRAM_ID,
+      ),
+    );
+  }
+
+  const blockhash = (await connection.getLatestBlockhash('finalized'))
+    .blockhash;
+  transaction.recentBlockhash = blockhash;
+  transaction.feePayer = user;
+  await wallet.signTransaction!(transaction);
+  await wallet.sendTransaction(transaction, connection);
+
+  console.log('Swapping');
+  if (swapType === SwapType.A2B) {
+    await tokenSwap.swap(
+      userAccountA.address,
+      tokenSwap.tokenAccountA,
+      tokenSwap.tokenAccountB,
+      userAccountB.address,
+      tokenSwap.mintA,
+      tokenSwap.mintB,
+      TOKEN_PROGRAM_ID,
+      TOKEN_PROGRAM_ID,
+      poolAccount,
+      userTransferAuthority,
+      SWAP_AMOUNT_IN,
+      SWAP_AMOUNT_OUT,
+      confirmOptions,
+    );
+  } else {
+    await tokenSwap.swap(
+      userAccountB.address,
+      tokenSwap.tokenAccountB,
+      tokenSwap.tokenAccountA,
+      userAccountA.address,
+      tokenSwap.mintB,
+      tokenSwap.mintA,
+      TOKEN_PROGRAM_ID,
+      TOKEN_PROGRAM_ID,
+      poolAccount,
+      userTransferAuthority,
+      SWAP_AMOUNT_IN,
+      SWAP_AMOUNT_OUT,
+      confirmOptions,
+    );
+  }
 }

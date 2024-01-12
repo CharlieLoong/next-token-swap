@@ -7,6 +7,14 @@ import { ModeToggle } from '@/components/mode-toggle';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
 import Trade from '@/components/trade';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 
@@ -30,11 +38,13 @@ import {
   fetchTokenSwap,
   owner,
   payer,
+  swap,
   withdrawAllTokenTypes,
 } from '@/lib/token-swap/lib';
 import { CurveType, TokenSwap } from '@/lib/token-swap';
 import Faucet from '@/components/faucet';
 import { useMint } from '@/hooks/use-mint';
+import { Input } from '@/components/ui/input';
 
 const WalletMultiButton = dynamic(
   async () =>
@@ -45,6 +55,7 @@ const WalletMultiButton = dynamic(
 );
 export default function Home() {
   const [tokenSwap, setTokenSwap] = useState<TokenSwap | null>(null);
+  const [swapType, setSwapType] = useState<'0' | '1'>('0');
   const {
     mintA,
     mintB,
@@ -139,7 +150,15 @@ export default function Home() {
     await withdrawAllTokenTypes(connection, tokenSwap, walletCtx);
     toast.success('withdraw success');
   }
-  console.log(walletCtx);
+
+  async function swapTokens() {
+    if (!tokenSwap) return;
+    toast('swapping');
+    await swap(connection, tokenSwap, walletCtx, Number(swapType));
+    toast.success('swap success');
+  }
+
+  // console.log(walletCtx);
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
       <ModeToggle />
@@ -165,6 +184,24 @@ export default function Home() {
       </Button>
       <Button onClick={deposit}>DEPOSIT</Button>
       <Button onClick={withdraw}>Withdraw</Button>
+      <div>
+        <Select
+          value={swapType}
+          onValueChange={(e) => {
+            setSwapType(e as any);
+          }}
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="InputToken" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="0">mintA</SelectItem>
+            <SelectItem value="1">mintB</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Button onClick={swapTokens}>Swap</Button>
+      </div>
     </main>
   );
 }
