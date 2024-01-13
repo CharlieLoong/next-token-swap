@@ -85,10 +85,24 @@ export default function Home() {
     setTokenSwap(tokenSwap);
     setMintPool(tokenSwap.poolToken);
     setSwapAccountPubKey(tokenSwap.tokenSwap);
-    toast('SWAP CREATED', {
+    toast('NEW SWAP CREATED', {
       description: <>pool token: {tokenSwap.poolToken.toString()}</>,
     });
   }
+
+  async function getNewPool() {
+    const tokenSwap = await createTokenSwap(
+      connection,
+      CurveType.ConstantProduct,
+    );
+    setTokenSwap(tokenSwap);
+    setMintPool(tokenSwap.poolToken);
+    setSwapAccountPubKey(tokenSwap.tokenSwap);
+    toast('NEW SWAP CREATED', {
+      description: <>pool token: {tokenSwap.poolToken.toString()}</>,
+    });
+  }
+
   async function deposit() {
     // if (tokenSwap && walletCtx.publicKey) {
     //   const userAccountA = await getOrCreateAssociatedTokenAccount(
@@ -159,14 +173,14 @@ export default function Home() {
   }
 
   // console.log(walletCtx);
+  console.log(tokenSwap);
+  console.log(tokenSwap?.poolToken.toString());
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
+    <main className="flex min-h-screen flex-col items-center justify-center p-24 gap-4">
       <ModeToggle />
       <Faucet />
-      老张啊
       {/* <ConnectWallet /> */}
       <h1>EndPoint: {connection.rpcEndpoint}</h1>
-      <WalletMultiButton />
       {/* <Trade /> */}
       <span>Token A: {mintA}</span>
       <span>Token B: {mintB}</span>
@@ -179,12 +193,18 @@ export default function Home() {
       {owner.publicKey && (
         <TokenBalance accountName="Owner" pubKey={owner.publicKey} />
       )}
-      <Button onClick={getOrCreatePool} disabled={tokenSwap != null}>
-        CREATE POOL
-      </Button>
-      <Button onClick={deposit}>DEPOSIT</Button>
-      <Button onClick={withdraw}>Withdraw</Button>
-      <div>
+      <WalletMultiButton />
+      <div className="flex gap-4">
+        <Button onClick={getOrCreatePool} disabled={tokenSwap != null}>
+          GET POOL
+        </Button>
+        <Button onClick={getNewPool}>NEW POOL</Button>
+      </div>
+      <div className="flex gap-4">
+        <Button onClick={deposit}>DEPOSIT</Button>
+        <Button onClick={withdraw}>Withdraw</Button>
+      </div>
+      <div className="flex gap-2">
         <Select
           value={swapType}
           onValueChange={(e) => {

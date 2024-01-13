@@ -8,6 +8,7 @@ import { TOKEN_PROGRAM_ID } from '@/lib/ids';
 import { TokenSwap } from '@/models';
 import { Button } from './ui/button';
 import { RefreshCcw } from 'lucide-react';
+import { useMint } from '@/hooks/use-mint';
 
 type TokenBalanceProps = {
   accountName?: string;
@@ -18,9 +19,33 @@ export default function TokenBalance({
   pubKey,
   accountName = 'Wallet',
 }: TokenBalanceProps) {
-  const [tokens, setTokens] = useState(
-    tokenlist['testnet'].map((item) => ({ ...item, balance: 0 })),
-  );
+  const [mintA, mintB, mintPool] = useMint((s) => [
+    s.mintA,
+    s.mintB,
+    s.mintPool,
+  ]);
+  // const [tokens, setTokens] = useState(
+  //   tokenlist['testnet'].map((item) => ({ ...item, balance: 0 })),
+  // );
+
+  const [tokens, setTokens] = useState([
+    {
+      tokenName: 'A',
+      mintAddress: mintA,
+      balance: 'loading',
+    },
+    {
+      tokenName: 'B',
+      mintAddress: mintB,
+      balance: 'loading',
+    },
+    {
+      tokenName: 'LP',
+      mintAddress: mintPool,
+      balance: 'loading',
+    },
+  ]);
+
   const connection = useConnection().connection;
 
   const getTokenBalances = useCallback(async () => {
@@ -51,7 +76,7 @@ export default function TokenBalance({
   }, [getTokenBalances]);
 
   return (
-    <div className="flex flex-col border p-2 rounded-sm shadow w-1/2">
+    <div className="flex flex-col border p-2 rounded-sm shadow w-64 gap-1">
       <h2>Token Balances of {accountName}</h2>
       {tokens.map((token, index) => (
         <div key={token.tokenName}>

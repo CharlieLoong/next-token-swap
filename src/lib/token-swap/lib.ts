@@ -172,15 +172,15 @@ export async function createTokenSwap(
   );
 
   const ownerKey = SWAP_PROGRAM_OWNER_FEE_ADDRESS || owner.publicKey.toString();
-  feeAccount = myKeyPair.publicKey;
+
   feeAccount = await createAccount(
     connection,
     payer,
     tokenPool,
-    new PublicKey(ownerKey),
+    owner.publicKey,
     Keypair.generate(),
   );
-  console.log(feeAccount.toString());
+  console.log('feeAccount: ', feeAccount.toString());
 
   // console.log('creating token A');
   // mintA = await createMint(
@@ -302,6 +302,9 @@ export async function depositAllTokenTypes(
   const tokenA = (swapTokenA.amount * BigInt(POOL_TOKEN_AMOUNT)) / supply;
   const swapTokenB = await getAccount(connection, tokenSwap.tokenAccountB);
   const tokenB = (swapTokenB.amount * BigInt(POOL_TOKEN_AMOUNT)) / supply;
+  console.log(
+    `deposit A: ${tokenA} B: ${tokenB}, get LP: ${POOL_TOKEN_AMOUNT}`,
+  );
 
   const userTransferAuthority = Keypair.generate();
   const transaction = new Transaction();
@@ -569,7 +572,7 @@ export async function swap(
   await wallet.signTransaction!(transaction);
   await wallet.sendTransaction(transaction, connection);
 
-  console.log('Swapping');
+  console.log('Swapping ', `input = ${SWAP_AMOUNT_IN}, output = ${SWAP_AMOUNT_OUT}`);
   if (swapType === SwapType.A2B) {
     await tokenSwap.swap(
       userAccountA.address,
