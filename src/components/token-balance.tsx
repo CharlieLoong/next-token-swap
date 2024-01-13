@@ -4,8 +4,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { PublicKey } from '@solana/web3.js';
 import tokenlist from '@/constants/token-list.json';
 import { useConnection } from '@solana/wallet-adapter-react';
-import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
-import { TokenSwap } from '@/models';
+
 import { Button } from './ui/button';
 import { RefreshCcw } from 'lucide-react';
 import { useMint } from '@/hooks/use-mint';

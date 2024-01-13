@@ -8,6 +8,7 @@ import {
   FieldValues,
   FormProvider,
   useFormContext,
+  //@ts-ignore
 } from "react-hook-form"
 
 import { cn } from "@/lib/utils"

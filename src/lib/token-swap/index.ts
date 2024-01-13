@@ -1,4 +1,5 @@
 import { Buffer } from 'buffer';
+//@ts-ignore
 import { struct, u8, blob } from '@solana/buffer-layout';
 import type {
   ConfirmOptions,
@@ -13,6 +14,8 @@ import {
   TransactionInstruction,
   sendAndConfirmTransaction,
 } from '@solana/web3.js';
+
+//@ts-ignore
 import { u64, publicKey } from '@solana/buffer-layout-utils';
 import { loadAccount } from './util/account';
 
