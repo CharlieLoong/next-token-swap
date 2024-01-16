@@ -122,8 +122,8 @@ export default function Swap({}: SwapProps) {
       const prevBalanceA = balanceA;
       const prevBalanceB = balanceB;
       console.log(prevBalanceA, prevBalanceB);
-      const curA = await getBalanceA();
-      const curB = await getBalanceB();
+      const curA = await getBalanceA() || 0;
+      const curB = await getBalanceB() || 0;
       console.log(prevBalanceA, prevBalanceB);
       const pay = prevBalanceA - curA;
       const receive = curB - prevBalanceB;
@@ -139,7 +139,7 @@ export default function Swap({}: SwapProps) {
     } catch (e) {
       console.error(e);
       toast.error('Swap Failed: ', {
-        description: <p>{e.toString()}</p>,
+        description: <p>{e?.toString()}</p>,
       });
     } finally {
       setPending(false);

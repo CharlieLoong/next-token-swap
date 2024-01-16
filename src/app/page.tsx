@@ -167,12 +167,12 @@ export default function Home() {
     toast.success('withdraw success');
   }
 
-  async function swapTokens() {
-    if (!tokenSwap) return;
-    toast('swapping');
-    await swap(connection, tokenSwap, walletCtx, Number(swapType));
-    toast.success('swap success');
-  }
+  // async function swapTokens() {
+  //   if (!tokenSwap) return;
+  //   toast('swapping');
+  //   await swap(connection, tokenSwap, walletCtx, Number(swapType));
+  //   toast.success('swap success');
+  // }
 
   // console.log(walletCtx);
   console.log(tokenSwap);

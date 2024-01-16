@@ -3,7 +3,10 @@ import { PublicKey } from '@solana/web3.js';
 import { throttle } from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 
-export function useBalance(owner: PublicKey, token: string | PublicKey) {
+export function useBalance(
+  owner: PublicKey | undefined,
+  token: string | PublicKey,
+) {
   const connection = useConnection().connection;
   const [tokenBalance, setTokenBalance] = useState(0);
 
