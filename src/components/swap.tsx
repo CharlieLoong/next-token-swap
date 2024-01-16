@@ -6,7 +6,7 @@ import {
 } from './ui/dropdown-menu';
 import { Input } from './ui/input';
 import { useMint } from '@/hooks/use-mint';
-import { HTMLProps, ReactNode, useEffect, useState } from 'react';
+import { HTMLProps, ReactNode, useEffect, useRef, useState } from 'react';
 import { useBalance } from '@/hooks/use-balance';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { useSwap } from '@/hooks/use-swap';
@@ -73,8 +73,8 @@ export default function Swap({}: SwapProps) {
   );
 
   const calculateOutput = debounce(async (input: number) => {
-    setCalculating(true);
     if (input === 0 || !input) return;
+    setCalculating(true);
     // const poolBalanceA = await connection.getBalance(tokenSwap?.tokenAccountA!);
     // const poolBalanceB = await connection.getBalance(tokenSwap?.tokenAccountB!);
     await getPoolBalanceA();
@@ -84,8 +84,8 @@ export default function Swap({}: SwapProps) {
     setCalculating(false);
   }, 500);
   const calculateInput = debounce(async (output: number) => {
-    setCalculating(true);
     if (output === 0 || !output) return;
+    setCalculating(true);
     await getPoolBalanceA();
     await getPoolBalanceB();
     if (output > poolBalanceB) {
@@ -184,7 +184,7 @@ export default function Swap({}: SwapProps) {
             align="end"
             className="p-2 bg-background z-20 rounded-lg border"
           >
-            <div className="w-64">
+            <div className="">
               <Label htmlFor="slippage">Max.Slippage:</Label>
               <Input
                 className="relative"
@@ -235,7 +235,10 @@ export default function Swap({}: SwapProps) {
         setInput={setInputA}
         balance={balanceA}
         selectedToken={tokenA}
-        setSelectedToken={setTokenA}
+        setSelectedToken={(token) => {
+          if (token === tokenB) return exchangeOrder();
+          setTokenA(token);
+        }}
         effect={calculateOutput}
       />
       <div className="flex justify-center -my-4 z-10">
@@ -249,7 +252,10 @@ export default function Swap({}: SwapProps) {
         setInput={setInputB}
         balance={balanceB}
         selectedToken={tokenB}
-        setSelectedToken={setTokenB}
+        setSelectedToken={(token) => {
+          if (token === tokenA) return exchangeOrder();
+          setTokenB(token);
+        }}
         effect={calculateInput}
       />
 
@@ -284,7 +290,8 @@ export default function Swap({}: SwapProps) {
           pending ||
           calculating ||
           InsufficientBalance ||
-          InsufficientLiquidity
+          InsufficientLiquidity ||
+          tokenA === tokenB
         }
         onClick={handleSwap}
       >
@@ -316,14 +323,17 @@ function TokenInput({
   setSelectedToken,
   effect,
 }: TokenInputProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
   return (
     <div className="border rounded-lg p-4 flex flex-col">
       <Label htmlFor="inputA">{text}</Label>
       <div className="flex gap-4 my-1">
         <Input
+          ref={inputRef}
           className="border-none"
           name="inputA"
-          type="number"
+          type="text"
           min={0}
           step={0.01}
           value={input}
@@ -334,6 +344,7 @@ function TokenInput({
           inputMode="decimal"
           pattern="^[0-9]*[.,]?[0-9]*$"
           placeholder="0"
+          onClick={() => inputRef.current?.select()}
         ></Input>
         <Select
           value={selectedToken}
