@@ -69,7 +69,7 @@ export default function TokenBalance({
       ),
     );
     setTokens(tokensWithBalance as typeof tokens);
-  }, [connection, pubKey, tokens]);
+  }, []);
   useEffect(() => {
     getTokenBalances();
   }, [getTokenBalances]);

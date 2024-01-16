@@ -45,6 +45,8 @@ import { CurveType, TokenSwap } from '@/lib/token-swap';
 import Faucet from '@/components/faucet';
 import { useMint } from '@/hooks/use-mint';
 import { Input } from '@/components/ui/input';
+import { Label } from '@radix-ui/react-dropdown-menu';
+import Swap from '@/components/swap';
 
 const WalletMultiButton = dynamic(
   async () =>
@@ -174,7 +176,6 @@ export default function Home() {
 
   // console.log(walletCtx);
   console.log(tokenSwap);
-  console.log(tokenSwap?.poolToken.toString());
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24 gap-4">
       <ModeToggle />
@@ -186,13 +187,15 @@ export default function Home() {
       <span>Token B: {mintB}</span>
       <span>Token LP: {mintPool}</span>
       <span>Swap Account address: {swapAccountPubKey}</span>
-      {walletCtx.publicKey && <TokenBalance pubKey={walletCtx.publicKey} />}
-      {tokenSwap?.authority && (
-        <TokenBalance accountName="Authority" pubKey={tokenSwap?.authority} />
-      )}
-      {owner.publicKey && (
-        <TokenBalance accountName="Owner" pubKey={owner.publicKey} />
-      )}
+      <div className="flex flex-col md:flex-row gap-4">
+        {walletCtx.publicKey && <TokenBalance pubKey={walletCtx.publicKey} />}
+        {tokenSwap?.authority && (
+          <TokenBalance accountName="Authority" pubKey={tokenSwap?.authority} />
+        )}
+        {owner.publicKey && (
+          <TokenBalance accountName="Owner" pubKey={owner.publicKey} />
+        )}
+      </div>
       <WalletMultiButton />
       <div className="flex gap-4">
         <Button onClick={getOrCreatePool} disabled={tokenSwap != null}>
@@ -204,7 +207,7 @@ export default function Home() {
         <Button onClick={deposit}>DEPOSIT</Button>
         <Button onClick={withdraw}>Withdraw</Button>
       </div>
-      <div className="flex gap-2">
+      {/* <div className="flex gap-2">
         <Select
           value={swapType}
           onValueChange={(e) => {
@@ -221,7 +224,8 @@ export default function Home() {
         </Select>
 
         <Button onClick={swapTokens}>Swap</Button>
-      </div>
+      </div> */}
+      <Swap />
     </main>
   );
 }

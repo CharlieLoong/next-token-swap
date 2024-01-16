@@ -10,11 +10,12 @@ interface MintState {
   swapAccountPubKey: string;
 }
 
-interface Action {
+interface MintAction {
   setMintPool: (key: PublicKey) => void;
   setSwapAccountPubKey: (key: PublicKey) => void;
 }
 
+// 目前没有用，可以换成普通JSONStorage
 const storage: PersistStorage<MintState> = {
   getItem: (name) => {
     const str = localStorage.getItem(name);
@@ -27,13 +28,13 @@ const storage: PersistStorage<MintState> = {
   removeItem: (name) => localStorage.removeItem(name),
 };
 
-export const useMint = create<MintState & Action>()(
+export const useMint = create<MintState & MintAction>()(
   persist(
     (set) => ({
       mintA: 'WgJ4QZ2SqDomPToBn2cjqjnXETNiHxPdh35mBsCdqgk',
       mintB: 'VfkeR5txoVnrHrrEKVmnfZ2jcJY5vWqEeqmV4cfJtQH',
       mintPool: '',
-      swapAccountPubKey: '',
+      swapAccountPubKey: 'FUvJrVLVaEF1orm21jP7nVcooezNgNgMepzST9F2xvVP',
       setMintPool: (key: PublicKey) => set({ mintPool: key.toBase58() }),
       setSwapAccountPubKey: (key: PublicKey) =>
         set({ swapAccountPubKey: key.toBase58() }),
