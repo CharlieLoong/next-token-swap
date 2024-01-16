@@ -122,8 +122,8 @@ export default function Swap({}: SwapProps) {
       const prevBalanceA = balanceA;
       const prevBalanceB = balanceB;
       console.log(prevBalanceA, prevBalanceB);
-      const curA = await getBalanceA() || 0;
-      const curB = await getBalanceB() || 0;
+      const curA = (await getBalanceA()) || 0;
+      const curB = (await getBalanceB()) || 0;
       console.log(prevBalanceA, prevBalanceB);
       const pay = prevBalanceA - curA;
       const receive = curB - prevBalanceB;
@@ -156,6 +156,8 @@ export default function Swap({}: SwapProps) {
   }
 
   useEffect(() => {
+    setInsufficientBalance(false);
+    setInsufficientLiquidity(false);
     if (inputA === 0 && inputB === 0) setButtonContent('Enter an amount');
     if (inputA > balanceA) {
       setInsufficientBalance(true);
